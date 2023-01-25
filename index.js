@@ -1,21 +1,20 @@
 const express = require("express");
+const path = require("path");
 const bodyParser = require("body-parser");
 
 const app = express();
 
+const adminRouter = require("./routes/admin");
+const shopRouter = require("./routes/shop");
+
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.static(path.join(__dirname, "public")))
 
-app.use("/add-product", (req, res, next) => {
-    res.send("<form action='/product' method='post'><input type='text' name='title' /><button type='submit' >Submit</button></form>")
-})
+app.use("/admin", adminRouter);
+app.use(shopRouter)
 
-app.use("/product", (req, res, next) => {
-    console.log(req.body);
-    res.redirect("/");
-})
-
-app.use("/", (req, res, next) => {
-    res.send("<h1>Welcome to Express JS Server!</h1>")
+app.use((req, res, next) => {
+    res.status(404).sendFile(path.join(__dirname, "views", "not-found.html"));
 })
 
 app.listen(9090);
